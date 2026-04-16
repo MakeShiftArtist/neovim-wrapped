@@ -1,20 +1,18 @@
 {
   description = ''
-    Uses flake-parts to set up the flake outputs:
-
-    `wrappers`, `wrapperModules` and `packages.*.*`
+    MakeShiftArtist's custom neovim configuation
+    Uses nix flakes, flake-parts, and wrapper-modules
   '';
 
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     wrappers.url = "github:BirdeeHub/nix-wrapper-modules";
     wrappers.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
   outputs =
     {
-      self,
       nixpkgs,
       wrappers,
       flake-parts,
@@ -26,7 +24,7 @@
         wrappers.flakeModules.wrappers
       ];
       perSystem =
-        { pkgs, ... }:
+        { ... }:
         {
           wrappers.control_type = "build";
           wrappers.packages = {
@@ -34,11 +32,20 @@
           };
         };
       flake.wrappers.neovim = ./modules/neovim.nix;
-      flake.wrappers.tmux =
-        { wlib, pkgs, ... }:
+
+      flake.homeModules.neovim =
+        { config, lib, ... }:
         {
-          imports = [ wlib.wrapperModules.tmux ];
-          plugins = with pkgs.tmuxPlugins; [ onedark-theme ];
+          imports = [
+            (inputs.wrappers.lib.mkInstallModule {
+              loc = [
+                "home"
+                "packages"
+              ];
+              name = "neovim";
+              value = inputs.wrappers.lib.wrapperModules.neovim;
+            })
+          ];
         };
     };
 }
