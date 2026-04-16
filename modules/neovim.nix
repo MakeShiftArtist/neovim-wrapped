@@ -21,6 +21,7 @@
   config.extraPackages = config.specCollect (acc: v: acc ++ (v.extraPackages or [ ])) [ ];
 
   config.settings.config_directory = ./nvim;
+  config.binName = "nvix";
 
   # You can declare your own options!
   options.settings.colorscheme = lib.mkOption {
