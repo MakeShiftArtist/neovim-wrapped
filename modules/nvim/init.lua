@@ -4,6 +4,9 @@ vim.g.have_nerd_font = true
 -- Fix SQLComplete error by using syntax completion instead of dbext (https://github.com/neovim/neovim/issues/14433)
 vim.g.omni_sql_default_compl_type = "syntax"
 
+-- Enables rounded borders to make "windows" easier to differentiate
+vim.o.winborder = "rounded"
+
 -- Show line numbers in the file
 vim.opt.number = true
 
