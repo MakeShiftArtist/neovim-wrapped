@@ -1,0 +1,4 @@
+# See https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#options
+indent_type = "Spaces"
+indent_width = 4
+column_width = 80
