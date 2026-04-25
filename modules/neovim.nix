@@ -56,6 +56,13 @@
     ];
   };
 
+  config.specs.deno = {
+    data = null;
+    extraPackages = with pkgs; [
+      deno
+    ];
+  };
+
   config.specs.lua = {
     data = null;
     extraPackages = with pkgs; [
@@ -146,6 +153,14 @@
       nodejs
       typescript-language-server
       # nodePackages.vscode-langservers-extracted
+    ];
+  };
+
+  config.specs.python = {
+    data = null;
+    extraPackages = with pkgs; [
+      ruff
+      ty
     ];
   };
 
