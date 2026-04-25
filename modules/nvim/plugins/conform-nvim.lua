@@ -50,4 +50,3 @@ conform.setup({
         lsp_format = "fallback",
     },
 })
-

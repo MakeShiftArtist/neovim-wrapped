@@ -11,4 +11,3 @@ local opts = {
 }
 
 require("nvim-treesitter").setup(opts)
-

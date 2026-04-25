@@ -55,4 +55,3 @@ vim.keymap.set(
     "<C-d>zz",
     { desc = "Move down half the page and center the cursor" }
 )
-
