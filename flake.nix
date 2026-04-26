@@ -43,11 +43,11 @@
       flake.wrappers.neovim = ./modules/neovim.nix;
 
       flake.homeModules.neovim-wrapped =
-        { self, pkgs, ... }:
+        { pkgs, ... }:
         {
           programs.neovim = {
             enable = true;
-            package = self.packages.${pkgs.system}.default;
+            package = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
             defaultEditor = true;
             viAlias = true;
             vimAlias = true;
@@ -59,11 +59,11 @@
         };
 
       flake.nixosModules.neovim-wrapped =
-        { self, pkgs, ... }:
+        { pkgs, ... }:
         {
           programs.neovim = {
             enable = true;
-            package = self.packages.${pkgs.system}.default;
+            package = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
             defaultEditor = true;
             viAlias = true;
             vimAlias = true;
