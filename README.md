@@ -7,7 +7,7 @@ A modular Neovim configuration built with Nix Flakes, flake-parts, and nix-wrapp
 Run the configuration directly without permanent installation:
 
 ```bash
-nix run github:MakeShiftArtist/your-repo-name
+nix run github:MakeShiftArtist/neovim-wrapped
 ```
 
 ## Features
@@ -26,7 +26,7 @@ Add the flake to your inputs and import the module:
 ```nix
 {
   inputs = {
-    nvim-config.url = "github:MakeShiftArtist/your-repo-name";
+    nvim-config.url = "github:MakeShiftArtist/neovim-wrapped";
   };
 
   outputs = { self, nvim-config, ... }: {
