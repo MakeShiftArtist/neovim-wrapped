@@ -24,12 +24,20 @@
         wrappers.flakeModules.wrappers
       ];
       perSystem =
-        { config, ... }:
+        { config, pkgs, ... }:
         {
           packages.default = config.packages.neovim;
           wrappers.control_type = "build";
           wrappers.packages = {
             neovim = true;
+          };
+
+          devShells.default = pkgs.mkShell {
+            packages = [ config.packages.default ];
+
+            shellHook = ''
+              echo "Neovim wrapped (nvix) development environment loaded";
+            '';
           };
         };
       flake.wrappers.neovim = ./modules/neovim.nix;
