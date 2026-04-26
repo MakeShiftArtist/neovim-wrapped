@@ -30,7 +30,6 @@
   };
 
   config.specs.colorscheme = {
-    lazy = true;
     data = builtins.getAttr config.settings.colorscheme (
       with pkgs.vimPlugins;
       {
@@ -75,6 +74,7 @@
     data = null;
     extraPackages = with pkgs; [
       wl-clipboard
+      git
       tree-sitter
       fd
       ripgrep
