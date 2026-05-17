@@ -1,0 +1,36 @@
+name: Update Flake Lock and Test Build
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # Runs every night at 4:00 AM UTC
+  workflow_dispatch:   # Allows manual triggering
+
+jobs:
+  update-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update flake.lock
+        run: nix flake update
+
+      - name: Build Neovim package
+        run: nix build .#neovim
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(nix): nightly flake.lock update"
+          committer: GitHub <noreply@github.com>
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          title: "chore(nix): nightly flake.lock update"
+          body: "Automated nightly update of `flake.lock` verified by a successful `nix build .#neovim`."
+          branch: "nix/update-flake-lock"
+          delete-branch: false
