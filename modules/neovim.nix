@@ -8,17 +8,17 @@
 {
   imports = [ wlib.wrapperModules.neovim ];
 
-  # This enables you to add extraPackages per spec, rather than just globally
+  # This enables you to add runtimePkgs per spec, rather than just globally
   # This is useful if certain plugins require packages, but you want those
   # plugins (and requirements) to be optional
   config.specMods = {
-    options.extraPackages = lib.mkOption {
+    options.runtimePkgs = lib.mkOption {
       type = lib.types.listOf wlib.types.stringable;
       default = [ ];
-      description = "a extraPackages spec field to put packages to suffix to the PATH";
+      description = "a runtimePkgs spec field to put packages to suffix to the PATH";
     };
   };
-  config.extraPackages = config.specCollect (acc: v: acc ++ (v.extraPackages or [ ])) [ ];
+  config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.extraPackages or [ ])) [ ];
 
   config.settings.config_directory = ./nvim;
   # Enable it as it's own binary, to avoid conflicts
@@ -42,7 +42,7 @@
 
   config.specs.nix = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       nixd
       nixfmt
     ];
@@ -50,7 +50,7 @@
 
   config.specs.rust = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       rust-analyzer
       clippy
     ];
@@ -58,14 +58,14 @@
 
   config.specs.deno = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       deno
     ];
   };
 
   config.specs.lua = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       lua-language-server
       stylua
     ];
@@ -73,7 +73,7 @@
 
   config.specs.general = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       wl-clipboard
       git
       tree-sitter
@@ -150,7 +150,7 @@
 
   config.specs.typescript = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       nodejs
       typescript-language-server
       # nodePackages.vscode-langservers-extracted
@@ -159,7 +159,7 @@
 
   config.specs.python = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       ruff
       ty
     ];
@@ -167,7 +167,7 @@
 
   config.specs.bash = {
     data = null;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       bash-language-server
     ];
   };
