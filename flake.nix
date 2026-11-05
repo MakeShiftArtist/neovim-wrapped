@@ -13,13 +13,16 @@
   };
   outputs =
     {
-      nixpkgs,
       wrappers,
       flake-parts,
       ...
     }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = nixpkgs.lib.platforms.all;
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
       imports = [
         wrappers.flakeModules.wrappers
       ];
