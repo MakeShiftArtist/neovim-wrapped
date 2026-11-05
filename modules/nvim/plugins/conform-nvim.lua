@@ -16,13 +16,9 @@ local prettier = {
 }
 conform.setup({
     formatters_by_ft = {
-        lua = {
-            "stylua",
-        },
+        lua = { "stylua" },
         python = { "ruff", "black", stop_after_first = true },
-        rust = {
-            "rustfmt",
-        },
+        rust = { "rustfmt" },
         javascript = web_formatters,
         typescript = web_formatters,
         javascriptreact = web_formatters,
