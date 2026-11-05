@@ -29,8 +29,8 @@ conform.setup({
         json = prettier,
         jsonc = prettier,
         nix = {
-            "nixfmt",
             "treefmt",
+            "nixfmt",
             lsp_format = "fallback",
             stop_after_first = true,
         },
