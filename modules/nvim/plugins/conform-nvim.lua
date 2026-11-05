@@ -9,6 +9,11 @@ local web_formatters = {
     "prettier",
     stop_after_first = true,
 }
+local prettier = {
+    "prettierd",
+    "prettier",
+    stop_after_first = true,
+}
 conform.setup({
     formatters_by_ft = {
         lua = {
@@ -22,6 +27,11 @@ conform.setup({
         typescript = web_formatters,
         javascriptreact = web_formatters,
         typescriptreact = web_formatters,
+        css = prettier,
+        html = prettier,
+        yaml = prettier,
+        json = prettier,
+        jsonc = prettier,
         nix = {
             "nixfmt",
             "treefmt",
