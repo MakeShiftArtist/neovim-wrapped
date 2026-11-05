@@ -8,6 +8,7 @@
     git
     nixfmt
     stylua
+    prettierd
   ];
 
   languages.nix = {
