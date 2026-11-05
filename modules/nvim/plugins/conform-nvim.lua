@@ -35,6 +35,16 @@ conform.setup({
             stop_after_first = true,
         },
     },
+    formatters = {
+        deno_fmt = {
+            condition = function(_, ctx)
+                return vim.fs.find({ "deno.json", "deno.jsonc" }, {
+                    path = ctx.filename,
+                    upward = true,
+                })[1] ~= nil
+            end,
+        },
+    },
     format_on_save = {
         timeout_ms = 500,
         lsp_format = "fallback",
