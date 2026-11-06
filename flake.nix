@@ -6,6 +6,9 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    neovim-nightly.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly.inputs.nixpkgs.follows = "nixpkgs";
+    neovim-nightly.inputs.flake-parts.follows = "flake-parts";
     wrappers.url = "github:BirdeeHub/nix-wrapper-modules";
     wrappers.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -43,7 +46,12 @@
             '';
           };
         };
-      flake.wrappers.neovim = ./modules/neovim.nix;
+      flake.wrappers.neovim =
+        { pkgs, ... }:
+        {
+          imports = [ ./modules/neovim.nix ];
+          config.package = inputs.neovim-nightly.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        };
 
       flake.homeModules.neovim-wrapped =
         { pkgs, ... }:
