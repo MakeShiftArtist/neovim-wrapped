@@ -9,6 +9,7 @@
     nixfmt
     stylua
     prettierd
+    yaml-language-server
   ];
 
   languages.nix = {
@@ -30,6 +31,7 @@
     enable = true;
     entry = "stylua --config-path stylua.toml";
   };
+  git-hooks.hooks.check-yaml.enable = true;
 
   # See full reference at https://devenv.sh/reference/options/
 }
