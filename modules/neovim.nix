@@ -18,7 +18,7 @@
       description = "a runtimePkgs spec field to put packages to suffix to the PATH";
     };
   };
-  config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.extraPackages or [ ])) [ ];
+  config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.runtimePkgs or [ ])) [ ];
 
   config.settings.config_directory = ./nvim;
   # Enable it as it's own binary, to avoid conflicts
@@ -163,6 +163,29 @@
       ruff
       ty
     ];
+  };
+
+  config.specs.yaml = {
+    data = null;
+    runtimePkgs = with pkgs; [
+      yaml-language-server
+    ];
+  };
+
+  config.specs.json = {
+    data = null;
+    runtimePkgs = with pkgs; [
+      vscode-langservers-extracted
+    ];
+  };
+
+  config.specs.schemastore = {
+    data = with pkgs.vimPlugins; [
+      # JSON/YAML schemas for jsonls and yamlls. See https://github.com/b0o/SchemaStore.nvim
+      SchemaStore-nvim
+    ];
+
+    config = builtins.readFile ./nvim/plugins/schemastore.lua;
   };
 
   config.specs.bash = {

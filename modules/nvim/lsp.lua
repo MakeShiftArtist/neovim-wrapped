@@ -176,3 +176,19 @@ vim.lsp.config("yamlls", {
     },
 })
 vim.lsp.enable("yamlls")
+
+-- JSON
+vim.lsp.config("jsonls", {
+    cmd = { "vscode-json-language-server", "--stdio" },
+    filetypes = { "json", "jsonc" },
+    root_markers = { ".git" },
+    init_options = {
+        provideFormatter = false, -- formatting handled by conform (prettier)
+    },
+    settings = {
+        json = {
+            validate = { enable = true },
+        },
+    },
+})
+vim.lsp.enable("jsonls")
