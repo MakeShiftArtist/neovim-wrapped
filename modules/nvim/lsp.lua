@@ -155,3 +155,24 @@ vim.lsp.config("ty", {
     },
 })
 vim.lsp.enable("ty")
+
+-- YAML
+vim.lsp.config("yamlls", {
+    cmd = { "yaml-language-server", "--stdio" },
+    filetypes = { "yaml" },
+    root_markers = { ".git" },
+    settings = {
+        redhat = { telemetry = { enabled = false } },
+        yaml = {
+            format = { enable = false }, -- formatting handled by conform (prettier)
+            validate = true,
+            hover = true,
+            completion = true,
+            schemaStore = {
+                enable = true,
+                url = "https://www.schemastore.org/api/json/catalog.json",
+            },
+        },
+    },
+})
+vim.lsp.enable("yamlls")
