@@ -185,6 +185,9 @@
       SchemaStore-nvim
     ];
 
+    # Must run after lsp.lua so these jsonls/yamlls overrides win the merge.
+    after = [ "lsp" ];
+
     config = builtins.readFile ./nvim/plugins/schemastore.lua;
   };
 

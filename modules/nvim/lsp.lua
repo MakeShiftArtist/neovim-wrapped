@@ -168,10 +168,7 @@ vim.lsp.config("yamlls", {
             validate = true,
             hover = true,
             completion = true,
-            schemaStore = {
-                enable = true,
-                url = "https://www.schemastore.org/api/json/catalog.json",
-            },
+            -- schemaStore/schemas are configured in plugins/schemastore.lua
         },
     },
 })
