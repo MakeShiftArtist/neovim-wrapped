@@ -195,6 +195,8 @@
     data = null;
     runtimePkgs = with pkgs; [
       bash-language-server
+      # bash-language-server uses shellcheck for diagnostics when it is on PATH
+      shellcheck
     ];
   };
 
