@@ -178,6 +178,14 @@
     ];
   };
 
+  # Formatter used by conform for json/jsonc/yaml/css/html (jsonls and yamlls formatting is disabled)
+  config.specs.prettier = {
+    data = null;
+    runtimePkgs = with pkgs; [
+      prettierd
+    ];
+  };
+
   config.specs.schemastore = {
     data = with pkgs.vimPlugins; [
       # JSON/YAML schemas for jsonls and yamlls. See https://github.com/b0o/SchemaStore.nvim
