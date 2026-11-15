@@ -153,7 +153,6 @@
     runtimePkgs = with pkgs; [
       nodejs
       typescript-language-server
-      # nodePackages.vscode-langservers-extracted
     ];
   };
 
