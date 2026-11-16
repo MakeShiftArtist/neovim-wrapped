@@ -122,14 +122,18 @@ nix shell github:MakeShiftArtist/neovim-wrapped
 
 ## Repository Structure
 
-- `flake.nix`: Entry point and flake-parts orchestration.
-- `modules/neovim.nix`: The Nix wrapper module that bridges Nix and Neovim.
-- `modules/nvim/`:
-  - `init.lua`: Core Neovim initialization.
-  - `lsp.lua`: Language Server Protocol configurations.
-  - `keymaps.lua`: Custom keybindings.
-  - `plugins/`: Individual plugin configurations (Blink, Telescope, Treesitter, etc.).
-- `devenv.nix`: Development environment configuration.
+- `flake.nix`: Entry point and flake-parts orchestration. Exposes the package and the NixOS and Home Manager modules.
+- `modules/neovim.nix`: The `nix-wrapper-modules` config. Each Lua file in `modules/nvim/` is loaded by exactly one spec here, which also lists the plugins and packages that file needs. The specs are grouped into core, plugins and languages.
+- `modules/program.nix`: The `programs.neovim-wrapped` module shared by the NixOS and Home Manager modules (see [Options](#options)).
+- `modules/nvim/`: The Lua config.
+  - `options.lua`: Editor options and basic autocommands.
+  - `keymaps.lua`: Leader key and custom keybindings.
+  - `languages/`: One file per language (Bash, Deno, JSON, Lua, Nix, Python, Rust, TypeScript, YAML), each setting up its language server.
+  - `plugins/`: One file per plugin (blink.cmp, conform, LuaSnip, SchemaStore, Telescope, Treesitter, etc.).
+- `devenv.nix`: Development environment, including the nixfmt and stylua pre-commit hooks.
+- `.github/workflows/update-flake.yaml`: Nightly `flake.lock` update.
+
+There's intentionally no `modules/nvim/init.lua`. The wrapper would run it implicitly before every spec, so `options.lua` is loaded by its own spec instead. `modules/nvim/` is also on the runtimepath, so avoid folder names that Neovim loads automatically, such as `plugin/`, `lsp/`, `ftplugin/` or `after/`. Files in them would run outside the specs.
 
 ## Configuration Defaults
 
