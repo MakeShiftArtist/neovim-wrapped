@@ -206,7 +206,6 @@ in
     runtimePkgs =
       with pkgs;
       [
-        nodejs
         typescript-language-server
       ]
       ++ formatters [ prettierd ];
