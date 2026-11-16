@@ -51,75 +51,9 @@ in
     linker) for Rust development without a project dev shell. It adds about 2 GiB,
     so by default the toolchain is expected to come from the project (dev shell or rustup)'';
 
-  config.specs.colorscheme = {
-    data = builtins.getAttr config.settings.colorscheme (
-      with pkgs.vimPlugins;
-      {
-        "tokyonight" = tokyonight-nvim;
-      }
-    );
-    config = builtins.readFile ./nvim/plugins/${config.settings.colorscheme}.lua;
-  };
-
-  config.specs.nix = {
-    data = null;
-    runtimePkgs = with pkgs; [
-      nixd
-      nixfmt
-    ];
-    config = builtins.readFile ./nvim/languages/nix.lua;
-  };
-
-  # rust-analyzer is always installed. The toolchain is only bundled when
-  # settings.rust.toolchain.enable is set; otherwise it comes from the project.
-  # A project's own toolchain still wins either way, since runtimePkgs are appended to PATH.
-  config.specs.rust = {
-    enable = config.settings.rust.enable;
-    data = null;
-    runtimePkgs =
-      with pkgs;
-      [
-        rust-analyzer
-      ]
-      ++ lib.optionals config.settings.rust.toolchain.enable (
-        [
-          # Used by rust-analyzer to load the workspace, run build scripts and proc-macros
-          cargo
-          rustc
-          # Linker for build scripts and proc-macros
-          stdenv.cc
-          # rust-analyzer's check command
-          clippy
-        ]
-        ++ formatters [ rustfmt ]
-      );
-    # Standard library sources; nixpkgs' rustc sysroot doesn't include them. rust.lua
-    # only uses this when the active toolchain has no sources of its own.
-    info = lib.optionalAttrs config.settings.rust.toolchain.enable {
-      rust_src = "${pkgs.rustPlatform.rustLibSrc}";
-    };
-    config = builtins.readFile ./nvim/languages/rust.lua;
-  };
-
-  config.specs.deno = {
-    data = null;
-    runtimePkgs = with pkgs; [
-      # language server and conform formatter (deno_fmt)
-      deno
-    ];
-    config = builtins.readFile ./nvim/languages/deno.lua;
-  };
-
-  config.specs.lua = {
-    data = null;
-    runtimePkgs =
-      with pkgs;
-      [
-        lua-language-server
-      ]
-      ++ formatters [ stylua ];
-    config = builtins.readFile ./nvim/languages/lua.lua;
-  };
+  #
+  # Core
+  #
 
   config.specs.options = {
     data = null;
@@ -132,6 +66,26 @@ in
       pkgs.wl-clipboard
     ];
     config = builtins.readFile ./nvim/options.lua;
+  };
+
+  config.specs.keymaps = {
+    data = null;
+    # Sets <leader>; specs that map <leader> must declare `after = [ "keymaps" ]`
+    config = builtins.readFile ./nvim/keymaps.lua;
+  };
+
+  #
+  # Plugins
+  #
+
+  config.specs.colorscheme = {
+    data = builtins.getAttr config.settings.colorscheme (
+      with pkgs.vimPlugins;
+      {
+        "tokyonight" = tokyonight-nvim;
+      }
+    );
+    config = builtins.readFile ./nvim/plugins/${config.settings.colorscheme}.lua;
   };
 
   config.specs.treesitter = {
@@ -170,28 +124,18 @@ in
     config = builtins.readFile ./nvim/plugins/treesitter.lua;
   };
 
-  config.specs.keymaps = {
-    data = null;
-    # Sets <leader>; specs that map <leader> must declare `after = [ "keymaps" ]`
-    config = builtins.readFile ./nvim/keymaps.lua;
-  };
-
   config.specs.surround = {
     data = with pkgs.vimPlugins; [
       # Adds surround vim motions
       nvim-surround
     ];
-
     config = builtins.readFile ./nvim/plugins/nvim-surround.lua;
-
   };
 
   config.specs.autopairs = {
-
     data = with pkgs.vimPlugins; [
       nvim-autopairs
     ];
-
     config = builtins.readFile ./nvim/plugins/nvim-autopairs.lua;
   };
 
@@ -208,7 +152,6 @@ in
     data = with pkgs.vimPlugins; [
       lualine-nvim
     ];
-
     config = builtins.readFile ./nvim/plugins/lualine-nvim.lua;
   };
 
@@ -233,8 +176,64 @@ in
     data = with pkgs.vimPlugins; [
       luasnip
     ];
-
     config = builtins.readFile ./nvim/plugins/luasnip.lua;
+  };
+
+  config.specs.completion = {
+    data = with pkgs.vimPlugins; [
+      blink-cmp
+    ];
+    runtimePkgs = with pkgs; [
+      # Checked by blink.cmp's health check
+      curl
+    ];
+    config = builtins.readFile ./nvim/plugins/blink-cmp.lua;
+  };
+
+  config.specs.schemastore = {
+    data = with pkgs.vimPlugins; [
+      # JSON/YAML schemas for jsonls and yamlls. See https://github.com/b0o/SchemaStore.nvim
+      SchemaStore-nvim
+    ];
+    # Must run after the base jsonls/yamlls configs so these overrides win the merge.
+    after = [
+      "json"
+      "yaml"
+    ];
+    config = builtins.readFile ./nvim/plugins/schemastore.lua;
+  };
+
+  #
+  # Languages (language servers and linters)
+  #
+
+  config.specs.lua = {
+    data = null;
+    runtimePkgs =
+      with pkgs;
+      [
+        lua-language-server
+      ]
+      ++ formatters [ stylua ];
+    config = builtins.readFile ./nvim/languages/lua.lua;
+  };
+
+  config.specs.nix = {
+    data = null;
+    runtimePkgs = with pkgs; [
+      nixd
+      nixfmt
+    ];
+    config = builtins.readFile ./nvim/languages/nix.lua;
+  };
+
+  config.specs.deno = {
+    data = null;
+    runtimePkgs = with pkgs; [
+      # language server and conform formatter (deno_fmt)
+      deno
+    ];
+    config = builtins.readFile ./nvim/languages/deno.lua;
   };
 
   config.specs.typescript = {
@@ -246,6 +245,37 @@ in
       ]
       ++ formatters [ prettierd ];
     config = builtins.readFile ./nvim/languages/typescript.lua;
+  };
+
+  # rust-analyzer is always installed. The toolchain is only bundled when
+  # settings.rust.toolchain.enable is set; otherwise it comes from the project.
+  # A project's own toolchain still wins either way, since runtimePkgs are appended to PATH.
+  config.specs.rust = {
+    enable = config.settings.rust.enable;
+    data = null;
+    runtimePkgs =
+      with pkgs;
+      [
+        rust-analyzer
+      ]
+      ++ lib.optionals config.settings.rust.toolchain.enable (
+        [
+          # Used by rust-analyzer to load the workspace, run build scripts and proc-macros
+          cargo
+          rustc
+          # Linker for build scripts and proc-macros
+          stdenv.cc
+          # rust-analyzer's check command
+          clippy
+        ]
+        ++ formatters [ rustfmt ]
+      );
+    # Standard library sources; nixpkgs' rustc sysroot doesn't include them. rust.lua
+    # only uses this when the active toolchain has no sources of its own.
+    info = lib.optionalAttrs config.settings.rust.toolchain.enable {
+      rust_src = "${pkgs.rustPlatform.rustLibSrc}";
+    };
+    config = builtins.readFile ./nvim/languages/rust.lua;
   };
 
   config.specs.python = {
@@ -280,21 +310,6 @@ in
     config = builtins.readFile ./nvim/languages/json.lua;
   };
 
-  config.specs.schemastore = {
-    data = with pkgs.vimPlugins; [
-      # JSON/YAML schemas for jsonls and yamlls. See https://github.com/b0o/SchemaStore.nvim
-      SchemaStore-nvim
-    ];
-
-    # Must run after the base jsonls/yamlls configs so these overrides win the merge.
-    after = [
-      "json"
-      "yaml"
-    ];
-
-    config = builtins.readFile ./nvim/plugins/schemastore.lua;
-  };
-
   config.specs.bash = {
     data = null;
     runtimePkgs = with pkgs; [
@@ -303,16 +318,5 @@ in
       shellcheck
     ];
     config = builtins.readFile ./nvim/languages/bash.lua;
-  };
-
-  config.specs.completion = {
-    data = with pkgs.vimPlugins; [
-      blink-cmp
-    ];
-    runtimePkgs = with pkgs; [
-      # Checked by blink.cmp's health check
-      curl
-    ];
-    config = builtins.readFile ./nvim/plugins/blink-cmp.lua;
   };
 }
