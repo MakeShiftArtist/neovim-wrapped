@@ -175,6 +175,8 @@ in
   config.specs.luasnip = {
     data = with pkgs.vimPlugins; [
       luasnip
+      # VS Code-style snippet collection, loaded by luasnip.lua. See https://github.com/rafamadriz/friendly-snippets
+      friendly-snippets
     ];
     config = builtins.readFile ./nvim/plugins/luasnip.lua;
   };
@@ -187,6 +189,10 @@ in
       # Checked by blink.cmp's health check
       curl
     ];
+    # Expand snippets with LuaSnip when the luasnip spec is enabled, otherwise with
+    # Neovim's built-in vim.snippet
+    info.snippets_preset = if config.specs.luasnip.enable then "luasnip" else "default";
+    after = [ "luasnip" ];
     config = builtins.readFile ./nvim/plugins/blink-cmp.lua;
   };
 

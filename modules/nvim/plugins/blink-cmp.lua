@@ -1,9 +1,14 @@
 -----------------------------------
 -- Blink-cmp
 
+-- `info.snippets_preset` is set by the completion spec in neovim.nix
+local info = ...
+
 local blink = require("blink.cmp")
 
 blink.setup({
+    -- "luasnip" when the luasnip spec is enabled, otherwise "default" (vim.snippet)
+    snippets = { preset = info.snippets_preset },
     cmdline = { enabled = true },
     signature = {
         enabled = true,
