@@ -73,13 +73,16 @@
 
   config.specs.general = {
     data = null;
-    runtimePkgs = with pkgs; [
-      wl-clipboard
-      git
-      tree-sitter
-      fd
-      ripgrep
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        git
+        tree-sitter
+        fd
+        ripgrep
+      ]
+      # Clipboard provider for clipboard=unnamedplus on Wayland (macOS uses the built-in pbcopy/pbpaste)
+      ++ lib.optionals stdenv.hostPlatform.isLinux [ wl-clipboard ];
     config = builtins.readFile ./nvim/init.lua;
   };
 
