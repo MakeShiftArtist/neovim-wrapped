@@ -20,8 +20,8 @@
   };
   config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.runtimePkgs or [ ])) [ ];
 
-  # There is no ./nvim/init.lua on purpose, so the wrapper doesn't run anything
-  # implicitly; options.lua is loaded by the options spec instead.
+  # Every Lua file in ./nvim is loaded by exactly one spec below. There is no
+  # ./nvim/init.lua on purpose, so the wrapper doesn't run anything implicitly.
   config.settings.config_directory = ./nvim;
   # Enable it as it's own binary, to avoid conflicts
   # config.binName = "nvix";
@@ -77,7 +77,6 @@
     data = null;
     runtimePkgs = with pkgs; [
       git
-      tree-sitter
       fd
       ripgrep
     ];
@@ -90,6 +89,40 @@
       pkgs.wl-clipboard
     ];
     config = builtins.readFile ./nvim/options.lua;
+  };
+
+  config.specs.treesitter = {
+    data = with pkgs.vimPlugins; [
+      # Parsers come from nix, so nothing is compiled or downloaded at runtime
+      (nvim-treesitter.withPlugins (
+        p: with p; [
+          bash
+          css
+          html
+          javascript
+          json
+          lua
+          markdown
+          markdown_inline
+          nix
+          python
+          query
+          regex
+          rust
+          toml
+          tsx
+          typescript
+          vim
+          vimdoc
+          yaml
+        ]
+      ))
+    ];
+    runtimePkgs = with pkgs; [
+      # Required by nvim-treesitter (checkhealth, :TSInstall/:TSUpdate)
+      tree-sitter
+    ];
+    config = builtins.readFile ./nvim/plugins/treesitter.lua;
   };
 
   config.specs.keymaps = {
