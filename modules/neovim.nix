@@ -48,6 +48,7 @@
       nixd
       nixfmt
     ];
+    config = builtins.readFile ./nvim/languages/nix.lua;
   };
 
   config.specs.rust = {
@@ -56,6 +57,7 @@
       rust-analyzer
       clippy
     ];
+    config = builtins.readFile ./nvim/languages/rust.lua;
   };
 
   config.specs.deno = {
@@ -63,6 +65,7 @@
     runtimePkgs = with pkgs; [
       deno
     ];
+    config = builtins.readFile ./nvim/languages/deno.lua;
   };
 
   config.specs.lua = {
@@ -71,6 +74,7 @@
       lua-language-server
       stylua
     ];
+    config = builtins.readFile ./nvim/languages/lua.lua;
   };
 
   config.specs.options = {
@@ -120,11 +124,6 @@
     data = null;
     # Sets <leader>; specs that map <leader> must declare `after = [ "keymaps" ]`
     config = builtins.readFile ./nvim/keymaps.lua;
-  };
-
-  config.specs.lsp = {
-    data = null;
-    config = builtins.readFile ./nvim/lsp.lua;
   };
 
   config.specs.surround = {
@@ -193,6 +192,7 @@
       nodejs
       typescript-language-server
     ];
+    config = builtins.readFile ./nvim/languages/typescript.lua;
   };
 
   config.specs.python = {
@@ -201,6 +201,7 @@
       ruff
       ty
     ];
+    config = builtins.readFile ./nvim/languages/python.lua;
   };
 
   config.specs.yaml = {
@@ -208,6 +209,7 @@
     runtimePkgs = with pkgs; [
       yaml-language-server
     ];
+    config = builtins.readFile ./nvim/languages/yaml.lua;
   };
 
   config.specs.json = {
@@ -215,6 +217,7 @@
     runtimePkgs = with pkgs; [
       vscode-langservers-extracted
     ];
+    config = builtins.readFile ./nvim/languages/json.lua;
   };
 
   # Formatter used by conform for json/jsonc/yaml/css/html (jsonls and yamlls formatting is disabled)
@@ -231,8 +234,11 @@
       SchemaStore-nvim
     ];
 
-    # Must run after lsp.lua so these jsonls/yamlls overrides win the merge.
-    after = [ "lsp" ];
+    # Must run after the base jsonls/yamlls configs so these overrides win the merge.
+    after = [
+      "json"
+      "yaml"
+    ];
 
     config = builtins.readFile ./nvim/plugins/schemastore.lua;
   };
@@ -244,6 +250,7 @@
       # bash-language-server uses shellcheck for diagnostics when it is on PATH
       shellcheck
     ];
+    config = builtins.readFile ./nvim/languages/bash.lua;
   };
 
   config.specs.completion = {

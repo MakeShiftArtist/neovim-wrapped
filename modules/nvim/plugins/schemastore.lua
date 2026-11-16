@@ -1,7 +1,7 @@
 -----------------------------------
 -- SchemaStore.nvim
 -- Provides JSON/YAML schemas from https://www.schemastore.org to jsonls and yamlls.
--- vim.lsp.config merges with the base configs in lsp.lua.
+-- vim.lsp.config merges with the base configs in languages/json.lua and languages/yaml.lua.
 --
 -- Only the schemas listed below are used. Names must match the catalog exactly
 -- (an unknown name is an error); browse them at https://www.schemastore.org.
