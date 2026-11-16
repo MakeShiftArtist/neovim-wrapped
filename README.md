@@ -133,12 +133,11 @@ nix shell github:MakeShiftArtist/neovim-wrapped
 
 ## Configuration Defaults
 
-The modules provided by this flake automatically apply the following settings:
+By default the modules only install the wrapped package, as the `programs.neovim` package named `nvim`. Everything else is opt-in through the [options](#options) below:
 
-- **Binary Name**: The executable is named `nvix` (to avoid conflicts with standard `nvim`).
-- **Default Editor**: Set to true via `EDITOR` environment variable.
-- **Aliases**: `vi`, `vim`, and `vimdiff` are linked to the wrapped `nvix` package.
-- **Lean Environment**: Python3 and Ruby providers are disabled by default to reduce closure size and startup overhead.
+- **Default editor and aliases**: off by default. Enable `defaultEditor`, `viAlias`, `vimAlias` and `vimdiffAlias` as needed.
+- **Binary name**: `nvim`. Set `binName = "nvix"` to install it alongside another Neovim (see [Using `nvix` alongside another Neovim](#using-nvix-alongside-another-neovim)).
+- **Lean environment**: `programs.neovim`'s Python3 and Ruby providers are disabled by default to reduce closure size and startup overhead. They're set with `lib.mkDefault`, like the forwarded options, so `programs.neovim.withPython3` and the rest can still be set directly.
 
 ## Options
 
@@ -147,6 +146,9 @@ The NixOS and Home Manager modules are configured through `programs.neovim-wrapp
 ```nix
 programs.neovim-wrapped = {
   enable = true;
+  defaultEditor = true;
+  viAlias = true;
+  vimAlias = true;
   settings.rust = {
     enable = true;
     toolchain.enable = true;
@@ -156,10 +158,33 @@ programs.neovim-wrapped = {
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `enable` | `false` | Install the wrapped Neovim (through `programs.neovim`) and make it the default editor. |
+| `enable` | `false` | Install the wrapped Neovim. |
+| `binName` | `"nvim"` | Name of the executable. Any other name, such as `"nvix"`, installs it alongside another Neovim. See below. |
+| `defaultEditor` | `false` | Set it as the default editor, using the `EDITOR` environment variable. |
+| `viAlias` | `false` | Make `vi` run it. |
+| `vimAlias` | `false` | Make `vim` run it. |
+| `vimdiffAlias` | `false` | Make `vimdiff` run it in diff mode (`-d`). |
 | `settings.rust.enable` | `true` | Rust language support: rust-analyzer, clippy checks and formatting with rustfmt. |
 | `settings.rust.toolchain.enable` | `false` | Bundle a complete Rust toolchain. See below. |
 | `package` | read-only | The resulting Neovim package, built with these settings. |
+
+When named `nvim`, `defaultEditor` and the aliases are passed on to `programs.neovim` as defaults, so you can also set `programs.neovim.viAlias` and the others directly. NixOS' `programs.neovim` has no `vimdiffAlias`, so on NixOS this module provides it.
+
+### Using `nvix` alongside another Neovim
+
+To keep a separate `nvim` (for example a stock one from `programs.neovim`) and use this configuration as `nvix`:
+
+```nix
+programs.neovim-wrapped = {
+  enable = true;
+  binName = "nvix";
+};
+
+# Optional: your other Neovim, which keeps the `nvim` name
+programs.neovim.enable = true;
+```
+
+With any name other than `nvim`, the package is installed on its own (`environment.systemPackages` on NixOS, `home.packages` with Home Manager) instead of through `programs.neovim`, and only the renamed executables are installed (`nvix`, `nvix-node`, ...). `defaultEditor` and the aliases still work and point to `nvix`, so leave them off if your other Neovim should keep `EDITOR`, `vi` and `vim`.
 
 ### Rust toolchain
 
