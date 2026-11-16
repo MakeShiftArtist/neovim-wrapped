@@ -5,6 +5,12 @@
   wlib,
   ...
 }:
+let
+  # Formatter packages for conform: only added to PATH when the autoformat
+  # (conform) spec is enabled. Tools that are also a language server or used
+  # by one (deno, ruff, nixfmt) are listed unconditionally instead.
+  formatters = lib.optionals config.specs.autoformat.enable;
+in
 {
   imports = [ wlib.wrapperModules.neovim ];
 
@@ -55,11 +61,13 @@
 
   config.specs.rust = {
     data = null;
-    runtimePkgs = with pkgs; [
-      rust-analyzer
-      clippy
-      rustfmt
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        rust-analyzer
+        clippy
+      ]
+      ++ formatters [ rustfmt ];
     config = builtins.readFile ./nvim/languages/rust.lua;
   };
 
@@ -74,10 +82,12 @@
 
   config.specs.lua = {
     data = null;
-    runtimePkgs = with pkgs; [
-      lua-language-server
-      stylua
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        lua-language-server
+      ]
+      ++ formatters [ stylua ];
     config = builtins.readFile ./nvim/languages/lua.lua;
   };
 
@@ -193,11 +203,13 @@
 
   config.specs.typescript = {
     data = null;
-    runtimePkgs = with pkgs; [
-      nodejs
-      typescript-language-server
-      prettierd
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        nodejs
+        typescript-language-server
+      ]
+      ++ formatters [ prettierd ];
     config = builtins.readFile ./nvim/languages/typescript.lua;
   };
 
@@ -213,19 +225,23 @@
 
   config.specs.yaml = {
     data = null;
-    runtimePkgs = with pkgs; [
-      yaml-language-server
-      prettierd
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        yaml-language-server
+      ]
+      ++ formatters [ prettierd ];
     config = builtins.readFile ./nvim/languages/yaml.lua;
   };
 
   config.specs.json = {
     data = null;
-    runtimePkgs = with pkgs; [
-      vscode-langservers-extracted
-      prettierd
-    ];
+    runtimePkgs =
+      with pkgs;
+      [
+        vscode-langservers-extracted
+      ]
+      ++ formatters [ prettierd ];
     config = builtins.readFile ./nvim/languages/json.lua;
   };
 

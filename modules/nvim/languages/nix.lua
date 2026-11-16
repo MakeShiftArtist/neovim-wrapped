@@ -32,9 +32,9 @@ vim.lsp.config("nixd", {
                     ),
                 },
             },
-        },
-        formatting = {
-            command = { "nixfmt" },
+            formatting = {
+                command = { "nixfmt" },
+            },
         },
     },
 })
