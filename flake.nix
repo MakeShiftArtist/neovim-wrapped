@@ -45,37 +45,15 @@
         };
       flake.wrappers.neovim = ./modules/neovim.nix;
 
-      flake.homeModules.neovim-wrapped =
-        { pkgs, ... }:
-        {
-          programs.neovim = {
-            enable = true;
-            package = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
-            defaultEditor = true;
-            viAlias = true;
-            vimAlias = true;
-            vimdiffAlias = true;
-            # Disabled by default, but needed to silence warnings since home.stateVersion is older
-            withPython3 = false;
-            withRuby = false;
-          };
-        };
+      flake.homeModules.neovim-wrapped = import ./modules/program.nix {
+        inherit (inputs) self;
+        isHomeManager = true;
+      };
 
-      flake.nixosModules.neovim-wrapped =
-        { pkgs, ... }:
-        {
-          programs.neovim = {
-            enable = true;
-            package = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
-            defaultEditor = true;
-            viAlias = true;
-            vimAlias = true;
-            vimdiffAlias = true;
-            # Disabled by default, but needed to silence warnings since home.stateVersion is older
-            withPython3 = false;
-            withRuby = false;
-          };
-        };
+      flake.nixosModules.neovim-wrapped = import ./modules/program.nix {
+        inherit (inputs) self;
+        isHomeManager = false;
+      };
 
       flake.nixosModules.default = inputs.self.nixosModules.neovim-wrapped;
       flake.homeModules.default = inputs.self.homeModules.neovim-wrapped;

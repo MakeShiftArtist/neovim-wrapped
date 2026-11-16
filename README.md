@@ -36,6 +36,7 @@ Add the flake to your inputs and import the module into your system configuratio
       system = "x86_64-linux";
       modules = [
         nvim-config.nixosModules.default
+        { programs.neovim-wrapped.enable = true; }
         ./configuration.nix
       ];
     };
@@ -58,6 +59,8 @@ in
   imports = [
     nvim-flake.nixosModules.default
   ];
+
+  programs.neovim-wrapped.enable = true;
 }
 ```
 
@@ -78,6 +81,7 @@ If you manage your home environment with flakes, add the input and import the mo
     homeConfigurations."user" = home-manager.lib.homeManagerConfiguration {
       modules = [
         nvim-config.homeModules.default
+        { programs.neovim-wrapped.enable = true; }
         ./home.nix
       ];
     };
@@ -99,6 +103,8 @@ in
   imports = [
     nvim-flake.homeModules.default
   ];
+
+  programs.neovim-wrapped.enable = true;
 }
 ```
 
@@ -133,6 +139,41 @@ The modules provided by this flake automatically apply the following settings:
 - **Default Editor**: Set to true via `EDITOR` environment variable.
 - **Aliases**: `vi`, `vim`, and `vimdiff` are linked to the wrapped `nvix` package.
 - **Lean Environment**: Python3 and Ruby providers are disabled by default to reduce closure size and startup overhead.
+
+## Options
+
+The NixOS and Home Manager modules are configured through `programs.neovim-wrapped`:
+
+```nix
+programs.neovim-wrapped = {
+  enable = true;
+  settings.rust = {
+    enable = true;
+    toolchain.enable = true;
+  };
+};
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `enable` | `false` | Install the wrapped Neovim (through `programs.neovim`) and make it the default editor. |
+| `settings.rust.enable` | `true` | Rust language support: rust-analyzer, clippy checks and formatting with rustfmt. |
+| `settings.rust.toolchain.enable` | `false` | Bundle a complete Rust toolchain. See below. |
+| `package` | read-only | The resulting Neovim package, built with these settings. |
+
+### Rust toolchain
+
+By default only `rust-analyzer` is installed, and the toolchain is expected to come from the project, through a dev shell or rustup.
+
+Enable `settings.rust.toolchain.enable` to bundle a complete toolchain, so Rust works in any project, even without a dev shell:
+
+- `cargo` and `rustc`, which rust-analyzer needs to load workspaces and run build scripts and proc-macros
+- `clippy`, used by rust-analyzer's check command
+- `rustfmt`, the formatter
+- a C linker for build scripts and proc-macros
+- the standard library sources, used only when the active toolchain doesn't ship its own
+
+This adds about 2 GiB to the package, which is why it's off by default. A project's own toolchain still takes precedence when one is on `PATH`.
 
 ## Acknowledgments
 

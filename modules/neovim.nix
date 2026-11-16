@@ -40,6 +40,12 @@ in
     default = "tokyonight";
   };
 
+  options.settings.rust.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = true;
+    description = "Whether to enable Rust language support (rust-analyzer, clippy checks and rustfmt formatting).";
+  };
+
   options.settings.rust.toolchain.enable = lib.mkEnableOption ''
     a bundled Rust toolchain (cargo, rustc, clippy, rustfmt, std sources and a C
     linker) for Rust development without a project dev shell. It adds about 2 GiB,
@@ -68,6 +74,7 @@ in
   # settings.rust.toolchain.enable is set; otherwise it comes from the project.
   # A project's own toolchain still wins either way, since runtimePkgs are appended to PATH.
   config.specs.rust = {
+    enable = config.settings.rust.enable;
     data = null;
     runtimePkgs =
       with pkgs;
