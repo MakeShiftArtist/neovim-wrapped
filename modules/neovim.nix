@@ -40,6 +40,11 @@ in
     default = "tokyonight";
   };
 
+  options.settings.rust.toolchain.enable = lib.mkEnableOption ''
+    a bundled Rust toolchain (cargo, rustc, clippy, rustfmt, std sources and a C
+    linker) for Rust development without a project dev shell. It adds about 2 GiB,
+    so by default the toolchain is expected to come from the project (dev shell or rustup)'';
+
   config.specs.colorscheme = {
     data = builtins.getAttr config.settings.colorscheme (
       with pkgs.vimPlugins;
@@ -59,15 +64,33 @@ in
     config = builtins.readFile ./nvim/languages/nix.lua;
   };
 
+  # rust-analyzer is always installed. The toolchain is only bundled when
+  # settings.rust.toolchain.enable is set; otherwise it comes from the project.
+  # A project's own toolchain still wins either way, since runtimePkgs are appended to PATH.
   config.specs.rust = {
     data = null;
     runtimePkgs =
       with pkgs;
       [
         rust-analyzer
-        clippy
       ]
-      ++ formatters [ rustfmt ];
+      ++ lib.optionals config.settings.rust.toolchain.enable (
+        [
+          # Used by rust-analyzer to load the workspace, run build scripts and proc-macros
+          cargo
+          rustc
+          # Linker for build scripts and proc-macros
+          stdenv.cc
+          # rust-analyzer's check command
+          clippy
+        ]
+        ++ formatters [ rustfmt ]
+      );
+    # Standard library sources; nixpkgs' rustc sysroot doesn't include them. rust.lua
+    # only uses this when the active toolchain has no sources of its own.
+    info = lib.optionalAttrs config.settings.rust.toolchain.enable {
+      rust_src = "${pkgs.rustPlatform.rustLibSrc}";
+    };
     config = builtins.readFile ./nvim/languages/rust.lua;
   };
 
