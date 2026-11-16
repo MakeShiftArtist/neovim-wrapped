@@ -18,7 +18,9 @@
       description = "a runtimePkgs spec field to put packages to suffix to the PATH";
     };
   };
-  config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.runtimePkgs or [ ])) [ ];
+  # Several specs can need the same package (e.g. ruff is both a language server
+  # and a formatter), so de-duplicate the collected PATH entries.
+  config.runtimePkgs = lib.unique (config.specCollect (acc: v: acc ++ (v.runtimePkgs or [ ])) [ ]);
 
   # Every Lua file in ./nvim is loaded by exactly one spec below. There is no
   # ./nvim/init.lua on purpose, so the wrapper doesn't run anything implicitly.
@@ -56,6 +58,7 @@
     runtimePkgs = with pkgs; [
       rust-analyzer
       clippy
+      rustfmt
     ];
     config = builtins.readFile ./nvim/languages/rust.lua;
   };
@@ -63,6 +66,7 @@
   config.specs.deno = {
     data = null;
     runtimePkgs = with pkgs; [
+      # language server and conform formatter (deno_fmt)
       deno
     ];
     config = builtins.readFile ./nvim/languages/deno.lua;
@@ -149,7 +153,8 @@
     data = with pkgs.vimPlugins; [
       conform-nvim
     ];
-
+    # Formatters are provided by each language spec, not here. The fallbacks in
+    # conform-nvim.lua (black, prettier, treefmt) are expected to come from the project.
     config = builtins.readFile ./nvim/plugins/conform-nvim.lua;
   };
 
@@ -191,6 +196,7 @@
     runtimePkgs = with pkgs; [
       nodejs
       typescript-language-server
+      prettierd
     ];
     config = builtins.readFile ./nvim/languages/typescript.lua;
   };
@@ -198,6 +204,7 @@
   config.specs.python = {
     data = null;
     runtimePkgs = with pkgs; [
+      # language server and conform formatter
       ruff
       ty
     ];
@@ -208,6 +215,7 @@
     data = null;
     runtimePkgs = with pkgs; [
       yaml-language-server
+      prettierd
     ];
     config = builtins.readFile ./nvim/languages/yaml.lua;
   };
@@ -216,16 +224,9 @@
     data = null;
     runtimePkgs = with pkgs; [
       vscode-langservers-extracted
-    ];
-    config = builtins.readFile ./nvim/languages/json.lua;
-  };
-
-  # Formatter used by conform for json/jsonc/yaml/css/html (jsonls and yamlls formatting is disabled)
-  config.specs.prettier = {
-    data = null;
-    runtimePkgs = with pkgs; [
       prettierd
     ];
+    config = builtins.readFile ./nvim/languages/json.lua;
   };
 
   config.specs.schemastore = {
