@@ -93,7 +93,11 @@ in
 
   config.specs.options = {
     data = null;
-    runtimePkgs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+    runtimePkgs = [
+      # Used by Neovim itself (vim.net, :checkhealth "External Tools")
+      pkgs.curl
+    ]
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
       # Clipboard provider for clipboard=unnamedplus on Wayland (macOS uses the built-in pbcopy/pbpaste)
       pkgs.wl-clipboard
     ];
@@ -130,6 +134,8 @@ in
     runtimePkgs = with pkgs; [
       # Required by nvim-treesitter (checkhealth, :TSInstall/:TSUpdate)
       tree-sitter
+      curl
+      gnutar
     ];
     config = builtins.readFile ./nvim/plugins/treesitter.lua;
   };
@@ -272,6 +278,10 @@ in
   config.specs.completion = {
     data = with pkgs.vimPlugins; [
       blink-cmp
+    ];
+    runtimePkgs = with pkgs; [
+      # Checked by blink.cmp's health check
+      curl
     ];
     config = builtins.readFile ./nvim/plugins/blink-cmp.lua;
   };
