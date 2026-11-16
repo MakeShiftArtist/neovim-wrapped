@@ -20,6 +20,8 @@
   };
   config.runtimePkgs = config.specCollect (acc: v: acc ++ (v.runtimePkgs or [ ])) [ ];
 
+  # There is no ./nvim/init.lua on purpose, so the wrapper doesn't run anything
+  # implicitly; options.lua is loaded by the options spec instead.
   config.settings.config_directory = ./nvim;
   # Enable it as it's own binary, to avoid conflicts
   # config.binName = "nvix";
@@ -73,17 +75,21 @@
 
   config.specs.general = {
     data = null;
-    runtimePkgs =
-      with pkgs;
-      [
-        git
-        tree-sitter
-        fd
-        ripgrep
-      ]
+    runtimePkgs = with pkgs; [
+      git
+      tree-sitter
+      fd
+      ripgrep
+    ];
+  };
+
+  config.specs.options = {
+    data = null;
+    runtimePkgs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
       # Clipboard provider for clipboard=unnamedplus on Wayland (macOS uses the built-in pbcopy/pbpaste)
-      ++ lib.optionals stdenv.hostPlatform.isLinux [ wl-clipboard ];
-    config = builtins.readFile ./nvim/init.lua;
+      pkgs.wl-clipboard
+    ];
+    config = builtins.readFile ./nvim/options.lua;
   };
 
   config.specs.keymaps = {
