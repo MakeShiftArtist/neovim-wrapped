@@ -73,15 +73,6 @@
     ];
   };
 
-  config.specs.general = {
-    data = null;
-    runtimePkgs = with pkgs; [
-      git
-      fd
-      ripgrep
-    ];
-  };
-
   config.specs.options = {
     data = null;
     runtimePkgs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
@@ -127,6 +118,7 @@
 
   config.specs.keymaps = {
     data = null;
+    # Sets <leader>; specs that map <leader> must declare `after = [ "keymaps" ]`
     config = builtins.readFile ./nvim/keymaps.lua;
   };
 
@@ -178,7 +170,12 @@
       # Required dependency for Telescope.nvim
       plenary-nvim
     ];
-
+    runtimePkgs = with pkgs; [
+      git # git_files
+      fd # find_files
+      ripgrep # grep_string
+    ];
+    after = [ "keymaps" ];
     config = builtins.readFile ./nvim/plugins/telescope.lua;
   };
 
